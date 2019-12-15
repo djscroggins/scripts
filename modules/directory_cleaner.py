@@ -68,7 +68,7 @@ class DirectoryCleaner:
             if not logs_subdir.exists():
                 os.mkdir(logs_subdir)
             handler = TimedRotatingFileHandler(logs_subdir.joinpath(log_file_name), when='W0')
-            
+
         handler.setLevel(log_level)
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         handler.setFormatter(formatter)
