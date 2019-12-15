@@ -29,7 +29,7 @@ class DirectoryCleaner:
         if log_level == 10:
             ch = logging.StreamHandler()
         else:
-            ch = logging.FileHandler('directory-cleaning')
+            ch = logging.FileHandler('logs/directory-cleaning')
         ch.setLevel(log_level)
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         ch.setFormatter(formatter)
