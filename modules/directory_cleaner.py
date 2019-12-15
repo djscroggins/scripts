@@ -1,15 +1,28 @@
 import datetime as dt
 import logging
 import os
+from pathlib import Path
 import shutil
 import subprocess as sp
 import sys
 import time
 import traceback as tb
+from typing import Union
 
 
 class DirectoryCleaner:
+    """
+    Utility class for identifying files to be deleted, currently based on age only
+    """
     def __init__(self, base_dir: str, max_age: int = 180, preview: bool = False, debug: bool = False):
+        """
+
+        Args:
+            base_dir (str): directory at which to start execution
+            max_age (int): threshold for acting on files in days
+            preview (bool): when set to True, will only generate a report and not delete files
+            debug (bool): when set to True logs will be streamed to console rather than written to file
+        """
         self.total_contents = 0
         self.total_old_contents = 0
         self.files_deleted = []
@@ -24,19 +37,28 @@ class DirectoryCleaner:
 
     @staticmethod
     def _get_logger(log_level: int) -> logging.Logger:
+        """
+        Returns configured logger. Streams to stdout if set to DEBUG, else writes to log file.
+        Args:
+            log_level (int): desired log level
+
+        Returns:
+            Configured logger
+
+        """
         logger = logging.getLogger('DirectoryCleaner')
         logger.setLevel(log_level)
         if log_level == 10:
-            ch = logging.StreamHandler()
+            handler = logging.StreamHandler()
         else:
-            ch = logging.FileHandler('logs/directory-cleaning')
-        ch.setLevel(log_level)
+            handler = logging.FileHandler(Path(__file__).parents[1].joinpath('logs', 'directory-cleaning'))
+        handler.setLevel(log_level)
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        ch.setFormatter(formatter)
-        logger.addHandler(ch)
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
         return logger
 
-    def _remove_file(self, file_path: str) -> None:
+    def _remove_file(self, file_path: Union[str, Path]) -> None:
         try:
             os.remove(file_path)
         except Exception as e:
@@ -44,7 +66,7 @@ class DirectoryCleaner:
             self.logger.error(tb.format_exc())
             sys.exit('Error executing clean up')
 
-    def _remove_directory(self, dir_path: str) -> None:
+    def _remove_directory(self, dir_path: Union[Path, os.PathLike]) -> None:
         try:
             shutil.rmtree(dir_path)
         except Exception as e:
@@ -52,31 +74,47 @@ class DirectoryCleaner:
             self.logger.error(tb.format_exc())
             sys.exit('Error executing clean up')
 
-    def _handle_old_content(self, content, content_path: str, timestamp) -> None:
+    def _handle_old_content(self, content_path: Path, timestamp) -> None:
         content_age = self.now - timestamp
         if content_age > self.max_age:
             self.total_old_contents += 1
             self.logger.debug(f'{content_path}: {content_age}')
-            if os.path.isfile(content_path):
+            if Path(content_path).is_file():
                 if not self.preview:
                     self._remove_file(content_path)
-                self.files_deleted.append(content)
-            elif os.path.isdir(content_path):
+                self.files_deleted.append(str(content_path))
+            elif Path(content_path).is_dir():
                 if not self.preview:
                     self._remove_directory(content_path)
-                self.dirs_deleted.append(content)
+                self.dirs_deleted.append(str(content_path))
 
     @staticmethod
-    def _get_date_added(content_path: str) -> str:
+    def _get_osx_date_added(content_path: Path) -> str:
+        """
+        OSX-specific subprocess for identifying when a given file/directory was added, using 'mdls'
+        a utility for listing metadata attributes of OSX files.
+
+        This particular execution specifies that we only want the metadata for the date added
+        and that we want only the date value itself.
+
+        See https://ss64.com/osx/mdls.html for more detail on mdls.
+
+        Args:
+            content_path (str): path to file/directory
+
+        Returns:
+            str: date file was added as string; current OSX format is %Y-%m-%d %H:%M:%S %z
+
+        """
         cp: sp.CompletedProcess = sp.run(
             ['mdls', '-name', 'kMDItemDateAdded', '-raw', f'{content_path}'], check=True, stdout=sp.PIPE)
         return str(cp.stdout.decode('utf-8'))
 
     def log_results(self) -> None:
-        self.logger.info(f'total contents: {self.total_contents}')
-        self.logger.info(f'total old contents: {self.total_old_contents}')
+        self.logger.info(f'Total Contents: {self.total_contents}')
+        self.logger.info(f'Total Contents to be Deleted: {self.total_old_contents}')
         self.logger.info(f'Files Deleted: {self.files_deleted}')
-        self.logger.info(f'Directories Deleted: {self.dirs_deleted}')
+        self.logger.info(f'Directories (and contents) Deleted: {self.dirs_deleted}')
         self.logger.info(f'Bad/Missing Metadata: {self.bad_metadata}\n')
 
     def remove_old_content(self) -> None:
@@ -86,18 +124,18 @@ class DirectoryCleaner:
         for content in directory_contents:
             self.total_contents += 1
 
-            content_path = os.path.join(self.base_dir, content)
-            date_added = self._get_date_added(content_path)
+            content_path = Path(self.base_dir).joinpath(content)
+            date_added = self._get_osx_date_added(content_path)
 
             if content not in self.osx_system_content:
                 if 'null' in date_added:
-                    self.bad_metadata.append(content_path)
+                    self.bad_metadata.append(str(content_path))
                     last_modified_timestamp = os.stat(content_path).st_mtime
-                    self._handle_old_content(content, content_path, last_modified_timestamp)
+                    self._handle_old_content(content_path, last_modified_timestamp)
 
-                elif content not in self.osx_system_content:
+                else:
                     date_added_timestamp = dt.datetime.strptime(
                         date_added, '%Y-%m-%d %H:%M:%S %z').timestamp()
-                    self._handle_old_content(content, content_path, date_added_timestamp)
+                    self._handle_old_content(content_path, date_added_timestamp)
 
         self.log_results()
