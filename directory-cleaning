@@ -1,0 +1,69 @@
+2019-12-15 01:00:48,490 - DirectoryCleaner - INFO - Cleaning /Users/davidscroggins/Downloads
+
+2019-12-15 01:00:55,806 - DirectoryCleaner - INFO - total contents: 159
+2019-12-15 01:00:55,806 - DirectoryCleaner - INFO - total old contents: 8
+2019-12-15 01:00:55,806 - DirectoryCleaner - INFO - Files Deleted: ['Discord.dmg', 'EligibilityResultsNotice.pdf', 'IMG_20181208_133945.jpg', '48283481_10214672703349960_2697983921454317568_n.jpg', 'VID_20181209_105053.mp4', '31295001525699.pdf', 'RepaymentApplicationDocument.pdf', 'IMG_20181208_133722.jpg']
+2019-12-15 01:00:55,806 - DirectoryCleaner - INFO - Directories Deleted: []
+
+2019-12-15 01:01:09,648 - DirectoryCleaner - INFO - Cleaning /Users/davidscroggins/Downloads
+
+2019-12-15 01:01:17,024 - DirectoryCleaner - INFO - total contents: 159
+2019-12-15 01:01:17,024 - DirectoryCleaner - INFO - total old contents: 8
+2019-12-15 01:01:17,025 - DirectoryCleaner - INFO - Files Deleted: ['Discord.dmg', 'EligibilityResultsNotice.pdf', 'IMG_20181208_133945.jpg', '48283481_10214672703349960_2697983921454317568_n.jpg', 'VID_20181209_105053.mp4', '31295001525699.pdf', 'RepaymentApplicationDocument.pdf', 'IMG_20181208_133722.jpg']
+2019-12-15 01:01:17,025 - DirectoryCleaner - INFO - Directories Deleted: []
+
+2019-12-15 01:02:19,015 - DirectoryCleaner - INFO - Cleaning /Users/davidscroggins/Downloads
+2019-12-15 01:02:26,417 - DirectoryCleaner - INFO - total contents: 159
+2019-12-15 01:02:26,418 - DirectoryCleaner - INFO - total old contents: 8
+2019-12-15 01:02:26,418 - DirectoryCleaner - INFO - Files Deleted: ['Discord.dmg', 'EligibilityResultsNotice.pdf', 'IMG_20181208_133945.jpg', '48283481_10214672703349960_2697983921454317568_n.jpg', 'VID_20181209_105053.mp4', '31295001525699.pdf', 'RepaymentApplicationDocument.pdf', 'IMG_20181208_133722.jpg']
+2019-12-15 01:02:26,418 - DirectoryCleaner - INFO - Directories Deleted: []
+
+2019-12-15 01:02:48,696 - DirectoryCleaner - INFO - Cleaning /Users/davidscroggins/Downloads
+2019-12-15 01:02:55,744 - DirectoryCleaner - INFO - total contents: 151
+2019-12-15 01:02:55,744 - DirectoryCleaner - INFO - total old contents: 0
+2019-12-15 01:02:55,744 - DirectoryCleaner - INFO - Files Deleted: []
+2019-12-15 01:02:55,744 - DirectoryCleaner - INFO - Directories Deleted: []
+
+2019-12-15 01:12:30,740 - DirectoryCleaner - INFO - Cleaning /Users/davidscroggins/Downloads
+2019-12-15 01:12:35,078 - DirectoryCleaner - ERROR - [Errno 2] No such file or directory: 'test/path'
+2019-12-15 01:12:35,079 - DirectoryCleaner - ERROR - Traceback (most recent call last):
+  File "/Users/davidscroggins/scripts/python/directory_cleaner.py", line 39, in _remove_file
+    os.remove('test/path')
+FileNotFoundError: [Errno 2] No such file or directory: 'test/path'
+
+2019-12-15 01:12:37,384 - DirectoryCleaner - ERROR - [Errno 2] No such file or directory: 'test/path'
+2019-12-15 01:12:37,385 - DirectoryCleaner - ERROR - Traceback (most recent call last):
+  File "/Users/davidscroggins/scripts/python/directory_cleaner.py", line 39, in _remove_file
+    os.remove('test/path')
+FileNotFoundError: [Errno 2] No such file or directory: 'test/path'
+
+2019-12-15 01:12:37,754 - DirectoryCleaner - INFO - total contents: 151
+2019-12-15 01:12:37,754 - DirectoryCleaner - INFO - total old contents: 2
+2019-12-15 01:12:37,754 - DirectoryCleaner - INFO - Files Deleted: ['48174239_10100710475298660_334585721954238464_n.jpg', 'muckdoc-favicon.ico']
+2019-12-15 01:12:37,754 - DirectoryCleaner - INFO - Directories Deleted: []
+
+2019-12-15 01:14:56,477 - DirectoryCleaner - INFO - Cleaning /Users/davidscroggins/Downloads
+2019-12-15 01:15:00,869 - DirectoryCleaner - ERROR - [Errno 2] No such file or directory: 'test/path'
+2019-12-15 01:15:00,870 - DirectoryCleaner - ERROR - Traceback (most recent call last):
+  File "/Users/davidscroggins/scripts/python/directory_cleaner.py", line 40, in _remove_file
+    os.remove('test/path')
+FileNotFoundError: [Errno 2] No such file or directory: 'test/path'
+
+2019-12-15 01:15:26,221 - DirectoryCleaner - INFO - Cleaning /Users/davidscroggins/Downloads
+2019-12-15 01:15:33,399 - DirectoryCleaner - INFO - total contents: 151
+2019-12-15 01:15:33,400 - DirectoryCleaner - INFO - total old contents: 2
+2019-12-15 01:15:33,400 - DirectoryCleaner - INFO - Files Deleted: ['48174239_10100710475298660_334585721954238464_n.jpg', 'muckdoc-favicon.ico']
+2019-12-15 01:15:33,400 - DirectoryCleaner - INFO - Directories Deleted: []
+
+2019-12-15 01:15:43,317 - DirectoryCleaner - INFO - Cleaning /Users/davidscroggins/Downloads
+2019-12-15 01:15:50,279 - DirectoryCleaner - INFO - total contents: 149
+2019-12-15 01:15:50,279 - DirectoryCleaner - INFO - total old contents: 0
+2019-12-15 01:15:50,279 - DirectoryCleaner - INFO - Files Deleted: []
+2019-12-15 01:15:50,279 - DirectoryCleaner - INFO - Directories Deleted: []
+
+2019-12-15 01:16:59,516 - DirectoryCleaner - INFO - Cleaning /Users/davidscroggins/Downloads
+2019-12-15 01:17:06,480 - DirectoryCleaner - INFO - total contents: 149
+2019-12-15 01:17:06,481 - DirectoryCleaner - INFO - total old contents: 0
+2019-12-15 01:17:06,481 - DirectoryCleaner - INFO - Files Deleted: []
+2019-12-15 01:17:06,481 - DirectoryCleaner - INFO - Directories Deleted: []
+

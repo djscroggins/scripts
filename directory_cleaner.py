@@ -3,11 +3,13 @@ import logging
 import os
 import shutil
 import subprocess as sp
+import sys
 import time
+import traceback as tb
 
 
 class DirectoryCleaner:
-    def __init__(self, base_dir: str, max_age: int = 180, verbose=False, preview=False, log_level=logging.INFO):
+    def __init__(self, base_dir: str, max_age: int = 180, preview: bool = False, debug: bool = False):
         self.total_contents = 0
         self.total_old_contents = 0
         self.files_deleted = []
@@ -15,12 +17,11 @@ class DirectoryCleaner:
         self.base_dir = base_dir
         self.max_age = dt.timedelta(days=max_age).total_seconds()
         self.now = time.time()
-        self.verbose = verbose
         self.preview = preview
-        self.logger = self.get_logger(log_level)
+        self.logger = self._get_logger(logging.DEBUG if debug else logging.INFO)
 
     @staticmethod
-    def get_logger(log_level):
+    def _get_logger(log_level: int) -> logging.Logger:
         logger = logging.getLogger('DirectoryCleaner')
         logger.setLevel(log_level)
         if log_level == 10:
@@ -33,19 +34,21 @@ class DirectoryCleaner:
         logger.addHandler(ch)
         return logger
 
-    @staticmethod
-    def _remove_file(file_path: str) -> None:
+    def _remove_file(self, file_path: str) -> None:
         try:
             os.remove(file_path)
-        except OSError as e:
-            print(str(e))
+        except Exception as e:
+            self.logger.error(str(e))
+            self.logger.error(tb.format_exc())
+            sys.exit('Error executing clean up')
 
-    @staticmethod
-    def _remove_directory(dir_path: str) -> None:
+    def _remove_directory(self, dir_path: str) -> None:
         try:
             shutil.rmtree(dir_path)
-        except OSError as e:
-            print(str(e))
+        except Exception as e:
+            self.logger.error(str(e))
+            self.logger.error(tb.format_exc())
+            sys.exit('Error executing clean up')
 
     @staticmethod
     def _get_date_added(content_path: str) -> str:
@@ -53,13 +56,14 @@ class DirectoryCleaner:
             ['mdls', '-name', 'kMDItemDateAdded', '-raw', f'{content_path}'], check=True, stdout=sp.PIPE)
         return str(cp.stdout.decode('utf-8'))
 
-    def log_results(self):
+    def log_results(self) -> None:
         self.logger.info(f'total contents: {self.total_contents}')
         self.logger.info(f'total old contents: {self.total_old_contents}')
         self.logger.info(f'Files Deleted: {self.files_deleted}')
-        self.logger.info(f'Directories Deleted: {self.dirs_deleted}')
+        self.logger.info(f'Directories Deleted: {self.dirs_deleted}\n')
 
-    def remove_old_content(self):
+    def remove_old_content(self) -> None:
+        self.logger.info(f'Cleaning {self.base_dir}')
         directory_contents = os.listdir(self.base_dir)
 
         for content in directory_contents:
@@ -72,8 +76,7 @@ class DirectoryCleaner:
                 age = self.now - date_added_timestamp
                 if age > self.max_age:
                     self.total_old_contents += 1
-                    if self.verbose:
-                        self.logger.debug(f'{content_path}: {date_added}')
+                    self.logger.debug(f'{content_path}: {date_added}')
                     if os.path.isfile(content_path):
                         if not self.preview:
                             self._remove_file(content_path)
