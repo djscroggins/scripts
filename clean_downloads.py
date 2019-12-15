@@ -56,19 +56,30 @@ def dirs():
 
 def get_date_added():
     contents = os.listdir(BASE_DIR)
+    _now = time.time()
+    six_months = dt.timedelta(days=360).total_seconds()
+    total_contents = 0
+    total_old_contents = 0
     for c in contents:
+        total_contents += 1
         _path = os.path.join(BASE_DIR, c)
         cp: subprocess.CompletedProcess = subprocess.run(
             ['mdls', '-name', 'kMDItemDateAdded', '-raw', f'{_path}'], check=True, stdout=subprocess.PIPE)
         # print(cp.stdout.decode('utf-8'))
-        time_string = str(cp.stdout.decode('utf-8'))
+        date_added = str(cp.stdout.decode('utf-8'))
         # print(str(st.stdout.decode('utf-8')))
-        if 'null' not in time_string:
-            date_time = dt.datetime.strptime(
-                time_string, '%Y-%m-%d %H:%M:%S %z')
+        if 'null' not in date_added:
+            date_added_timestamp = dt.datetime.strptime(
+                date_added, '%Y-%m-%d %H:%M:%S %z').timestamp()
+            age = _now - date_added_timestamp
+            if age > six_months:
+                total_old_contents += 1
+                print(f'{_path}: {date_added}')
         else:
-            print(f'{_path}: {time_string}')
-
+            print(f'{_path}: {date_added}')
+        
+    print(f'total contents: {total_contents}')
+    print(f'total old contents: {total_old_contents}')
 
 if __name__ == "__main__":
     get_date_added()
