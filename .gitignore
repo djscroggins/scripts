@@ -1,5 +1,8 @@
+cron-logs/
 logs/
 .idea/
+docker-token.txt
+.docker-token.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
