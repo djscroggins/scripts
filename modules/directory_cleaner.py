@@ -38,7 +38,7 @@ class DirectoryCleaner:
 
         logger_kwargs = dict(
             logger_name=kwargs.get('logger_name', type(self).__name__),
-            logs_subdir_name=kwargs.get('logs_subdir', 'directory-cleaning'),
+            logs_subdir_name=kwargs.get('logs_subdir', 'directory-cleaning-logs'),
             log_file_name=kwargs.get('logs_file_name', 'directory-cleaning')
         )
         self.logger = self._get_logger(logging.DEBUG if debug else logging.INFO, **logger_kwargs)
@@ -60,21 +60,19 @@ class DirectoryCleaner:
 
         logger = logging.getLogger(logger_name)
         logger.setLevel(log_level)
+
         if log_level == 10:
             handler = logging.StreamHandler()
-
         else:
             logs_subdir = Path(__file__).resolve().parents[1].joinpath('logs', logs_subdir_name)
             if not logs_subdir.exists():
                 os.mkdir(logs_subdir)
             handler = TimedRotatingFileHandler(logs_subdir.joinpath(log_file_name), when='W0')
+            
         handler.setLevel(log_level)
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         handler.setFormatter(formatter)
         logger.addHandler(handler)
-        logger.info(logger_name)
-        logger.info(logs_subdir_name)
-        logger.info(log_file_name)
         return logger
 
     def _remove_file(self, file_path: Union[str, Path]) -> None:
