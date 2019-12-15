@@ -1,5 +1,6 @@
 import datetime as dt
 import logging
+from logging.handlers import TimedRotatingFileHandler
 import os
 from pathlib import Path
 import shutil
@@ -14,11 +15,12 @@ class DirectoryCleaner:
     """
     Utility class for identifying files to be deleted, currently based on age only
     """
-    def __init__(self, base_dir: str, max_age: int = 180, preview: bool = False, debug: bool = False):
+
+    def __init__(self, base_dir: str, max_age: int = 180, preview: bool = False, debug: bool = False, **kwargs):
         """
 
         Args:
-            base_dir (str): directory at which to start execution
+            base_dir (str): absolute path to directory at which to start execution
             max_age (int): threshold for acting on files in days
             preview (bool): when set to True, will only generate a report and not delete files
             debug (bool): when set to True logs will be streamed to console rather than written to file
@@ -33,10 +35,16 @@ class DirectoryCleaner:
         self.max_age = dt.timedelta(days=max_age).total_seconds()
         self.now = time.time()
         self.preview = preview
-        self.logger = self._get_logger(logging.DEBUG if debug else logging.INFO)
+
+        logger_kwargs = dict(
+            logger_name=kwargs.get('logger_name', type(self).__name__),
+            logs_subdir_name=kwargs.get('logs_subdir', 'directory-cleaning'),
+            log_file_name=kwargs.get('logs_file_name', 'directory-cleaning')
+        )
+        self.logger = self._get_logger(logging.DEBUG if debug else logging.INFO, **logger_kwargs)
 
     @staticmethod
-    def _get_logger(log_level: int) -> logging.Logger:
+    def _get_logger(log_level: int, **kwargs) -> logging.Logger:
         """
         Returns configured logger. Streams to stdout if set to DEBUG, else writes to log file.
         Args:
@@ -46,16 +54,27 @@ class DirectoryCleaner:
             Configured logger
 
         """
-        logger = logging.getLogger('DirectoryCleaner')
+        logger_name = kwargs.get('logger_name')
+        logs_subdir_name = kwargs.get('logs_subdir_name')
+        log_file_name = kwargs.get('log_file_name')
+
+        logger = logging.getLogger(logger_name)
         logger.setLevel(log_level)
         if log_level == 10:
             handler = logging.StreamHandler()
+
         else:
-            handler = logging.FileHandler(Path(__file__).parents[1].joinpath('logs', 'directory-cleaning'))
+            logs_subdir = Path(__file__).resolve().parents[1].joinpath('logs', logs_subdir_name)
+            if not logs_subdir.exists():
+                os.mkdir(logs_subdir)
+            handler = TimedRotatingFileHandler(logs_subdir.joinpath(log_file_name), when='W0')
         handler.setLevel(log_level)
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         handler.setFormatter(formatter)
         logger.addHandler(handler)
+        logger.info(logger_name)
+        logger.info(logs_subdir_name)
+        logger.info(log_file_name)
         return logger
 
     def _remove_file(self, file_path: Union[str, Path]) -> None:
