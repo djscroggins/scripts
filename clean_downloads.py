@@ -4,6 +4,7 @@ from os import stat_result
 from typing import Callable
 import datetime as dt
 import subprocess
+import shutil
 
 BASE_DIR = '/Users/davidscroggins/Downloads'
 
@@ -23,7 +24,7 @@ def remove_old_files():
         #         print(dirpath)
         #         print(dirnames)
         #         print(file)
-            # print(filenames)
+        # print(filenames)
 
 
 def walk():
@@ -54,12 +55,28 @@ def dirs():
     print(f'total old contents: {total_old_contents}')
 
 
+def remove_file(file_path: str) -> None:
+    try:
+        os.remove(file_path)
+    except OSError as e:
+        print(str(e))
+
+
+def remove_directory(dir_path: str) -> None:
+    try:
+        shutil.rmtree(dir_path)
+    except OSError as e:
+        print(str(e))
+
+
 def get_date_added():
     contents = os.listdir(BASE_DIR)
     _now = time.time()
-    six_months = dt.timedelta(days=360).total_seconds()
+    six_months = dt.timedelta(days=365).total_seconds()
     total_contents = 0
     total_old_contents = 0
+    files_deleted = []
+    dirs_deleted = []
     for c in contents:
         total_contents += 1
         _path = os.path.join(BASE_DIR, c)
@@ -75,11 +92,21 @@ def get_date_added():
             if age > six_months:
                 total_old_contents += 1
                 print(f'{_path}: {date_added}')
+                if os.path.isfile(_path):
+                    # remove_file(_path)
+                    files_deleted.append(c)
+                elif os.path.isdir(_path):
+                    # remove_directory(_path)
+                    dirs_deleted.append(c)
         else:
-            print(f'{_path}: {date_added}')
-        
+            # print(f'{_path}: {date_added}')
+            pass
+
     print(f'total contents: {total_contents}')
     print(f'total old contents: {total_old_contents}')
+    print(f'Files Deleted: {files_deleted}')
+    print(f'Directories Deleted: {dirs_deleted}')
+
 
 if __name__ == "__main__":
     get_date_added()
