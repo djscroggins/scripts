@@ -14,6 +14,8 @@ class DirectoryCleaner:
         self.total_old_contents = 0
         self.files_deleted = []
         self.dirs_deleted = []
+        self.bad_metadata = []
+        self.osx_system_content = {'.DS_Store', '.localized', '__MACOSX'}
         self.base_dir = base_dir
         self.max_age = dt.timedelta(days=max_age).total_seconds()
         self.now = time.time()
@@ -50,6 +52,20 @@ class DirectoryCleaner:
             self.logger.error(tb.format_exc())
             sys.exit('Error executing clean up')
 
+    def _handle_old_content(self, content, content_path: str, timestamp) -> None:
+        content_age = self.now - timestamp
+        if content_age > self.max_age:
+            self.total_old_contents += 1
+            self.logger.debug(f'{content_path}: {content_age}')
+            if os.path.isfile(content_path):
+                if not self.preview:
+                    self._remove_file(content_path)
+                self.files_deleted.append(content)
+            elif os.path.isdir(content_path):
+                if not self.preview:
+                    self._remove_directory(content_path)
+                self.dirs_deleted.append(content)
+
     @staticmethod
     def _get_date_added(content_path: str) -> str:
         cp: sp.CompletedProcess = sp.run(
@@ -60,7 +76,8 @@ class DirectoryCleaner:
         self.logger.info(f'total contents: {self.total_contents}')
         self.logger.info(f'total old contents: {self.total_old_contents}')
         self.logger.info(f'Files Deleted: {self.files_deleted}')
-        self.logger.info(f'Directories Deleted: {self.dirs_deleted}\n')
+        self.logger.info(f'Directories Deleted: {self.dirs_deleted}')
+        self.logger.info(f'Bad/Missing Metadata: {self.bad_metadata}\n')
 
     def remove_old_content(self) -> None:
         self.logger.info(f'Cleaning {self.base_dir}')
@@ -68,25 +85,19 @@ class DirectoryCleaner:
 
         for content in directory_contents:
             self.total_contents += 1
+
             content_path = os.path.join(self.base_dir, content)
             date_added = self._get_date_added(content_path)
-            if 'null' not in date_added:
-                date_added_timestamp = dt.datetime.strptime(
-                    date_added, '%Y-%m-%d %H:%M:%S %z').timestamp()
-                age = self.now - date_added_timestamp
-                if age > self.max_age:
-                    self.total_old_contents += 1
-                    self.logger.debug(f'{content_path}: {date_added}')
-                    if os.path.isfile(content_path):
-                        if not self.preview:
-                            self._remove_file(content_path)
-                        self.files_deleted.append(content)
-                    elif os.path.isdir(content_path):
-                        if not self.preview:
-                            self._remove_directory(content_path)
-                        self.dirs_deleted.append(content)
-            else:
-                # print(f'{_path}: {date_added}')
-                pass
+
+            if content not in self.osx_system_content:
+                if 'null' in date_added:
+                    self.bad_metadata.append(content_path)
+                    last_modified_timestamp = os.stat(content_path).st_mtime
+                    self._handle_old_content(content, content_path, last_modified_timestamp)
+
+                elif content not in self.osx_system_content:
+                    date_added_timestamp = dt.datetime.strptime(
+                        date_added, '%Y-%m-%d %H:%M:%S %z').timestamp()
+                    self._handle_old_content(content, content_path, date_added_timestamp)
 
         self.log_results()
