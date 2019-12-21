@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Unbreaks pyenv installs in Mojave
 CFLAGS="-I$(brew --prefix readline)/include -I$(brew --prefix openssl)/include -I$(xcrun --show-sdk-path)/usr/include" \
 LDFLAGS="-L$(brew --prefix readline)/lib -L$(brew --prefix openssl)/lib" \
 PYTHON_CONFIGURE_OPTS=--enable-unicode=ucs2 \
