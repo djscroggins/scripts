@@ -1,6 +1,9 @@
+from pathlib import Path
+
 from modules.directory_cleaner import DirectoryCleaner
 
-BASE_DIR = '/Users/davidscroggins/Downloads'
+
+BASE_DIR = Path('/Users/davidscroggins/Downloads')
 
 if __name__ == "__main__":
     dc = DirectoryCleaner(base_dir=BASE_DIR, max_age=180, preview=True)
