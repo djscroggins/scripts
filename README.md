@@ -30,7 +30,7 @@ To run python scripts:
     ./clean-downloads.sh
     ```
 
-- Or set to run with cron. Sample script to clean Downloads folder every day at 9 pm and log cron output
+- Or set to run with cron. Sample tab to clean Downloads folder every day at 9 pm and log cron output
 
     ```
     0 21 * * * cd /path/to/scripts/ && ./clean-downloads.sh > /path/to/scripts/cron-logs/clean-downloads.log 2>&1
