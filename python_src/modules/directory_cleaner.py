@@ -128,11 +128,12 @@ class DirectoryCleaner:
         return str(cp.stdout.decode('utf-8'))
 
     def log_results(self) -> None:
-        self.logger.info(f'Total Contents: {self.total_contents}')
-        self.logger.info(f'Total Contents to be Deleted: {self.total_old_contents}')
-        self.logger.info(f'Files Deleted: {self.files_deleted}')
-        self.logger.info(f'Directories (and contents) Deleted: {self.dirs_deleted}')
-        self.logger.info(f'Bad/Missing Metadata: {self.bad_metadata}\n')
+        self.logger.info(f'\n**** SUMMARY ****'
+                         f'\nTotal Contents: {self.total_contents}\n'
+                         f'Total Contents to be Deleted: {self.total_old_contents}\n'
+                         f'Files Deleted: {self.files_deleted}\n'
+                         f'Directories (and contents) Deleted: {self.dirs_deleted}\n'
+                         f'Bad/Missing Metadata: {self.bad_metadata}\n')
 
     def remove_old_content(self) -> None:
         self.logger.info(f'Cleaning {self.base_dir}')
