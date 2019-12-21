@@ -16,14 +16,15 @@ class DirectoryCleaner:
     Utility class for identifying files to be deleted, currently based on age only
     """
 
-    def __init__(self, base_dir: str, max_age: int = 180, preview: bool = False, debug: bool = False, **kwargs):
+    def __init__(self, base_dir: Union[Path, str], max_age: int = 180, preview: bool = False, debug: bool = False,
+                 **kwargs):
         """
 
         Args:
             base_dir (str): absolute path to directory at which to start execution
             max_age (int): threshold for acting on files in days
-            preview (bool): when set to True, will only generate a report and not delete files
-            debug (bool): when set to True logs will be streamed to console rather than written to file
+            preview (bool): when set to True, will only generate a report of operation to be performed
+            debug (bool): when set to True, logs will be streamed to console rather than written to file
         """
         self.total_contents = 0
         self.total_old_contents = 0
@@ -31,7 +32,7 @@ class DirectoryCleaner:
         self.dirs_deleted = []
         self.bad_metadata = []
         self.osx_system_content = {'.DS_Store', '.localized', '__MACOSX'}
-        self.base_dir = base_dir
+        self.base_dir = base_dir if isinstance(base_dir, Path) else Path(base_dir)
         self.max_age = dt.timedelta(days=max_age).total_seconds()
         self.now = time.time()
         self.preview = preview
@@ -142,7 +143,7 @@ class DirectoryCleaner:
         for content in directory_contents:
             self.total_contents += 1
 
-            content_path = Path(self.base_dir).joinpath(content)
+            content_path = self.base_dir.joinpath(content)
             date_added = self._get_osx_date_added(content_path)
 
             if content not in self.osx_system_content:
