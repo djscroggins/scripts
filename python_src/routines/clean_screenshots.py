@@ -1,9 +1,10 @@
+import os
 from pathlib import Path
 
 from modules.directory_cleaner import DirectoryCleaner
 
 
-BASE_DIR = Path('/Users/davidscroggins/Desktop/screenshots')
+BASE_DIR = Path(os.getenv('SCREENSHOTS'))
 
 LOG_CONFIG = {
     'logs_subdir': 'screenshots-cleaning-logs',
