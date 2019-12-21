@@ -32,6 +32,6 @@ To run python scripts:
 
 - Or set to run with cron. Sample script to clean Downloads folder every day at 9 pm and log cron output
 
-    ```bash
+    ```
     0 21 * * * cd /path/to/scripts/ && ./clean-downloads.sh > /path/to/scripts/cron-logs/clean-downloads.log 2>&1
     ```
