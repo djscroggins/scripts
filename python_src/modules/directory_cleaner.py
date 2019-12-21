@@ -39,6 +39,7 @@ class DirectoryCleaner:
 
         logger_kwargs = dict(
             logger_name=kwargs.get('logger_name', type(self).__name__),
+            logs_basedir=kwargs.get('logs_basedir', Path(__file__).resolve().parents[1].joinpath('logs')),
             logs_subdir_name=kwargs.get('logs_subdir', 'directory-cleaning-logs'),
             log_file_name=kwargs.get('logs_file_name', 'directory-cleaning')
         )
@@ -56,6 +57,7 @@ class DirectoryCleaner:
 
         """
         logger_name = kwargs.get('logger_name')
+        logs_basedir = kwargs.get('logs_basedir')
         logs_subdir_name = kwargs.get('logs_subdir_name')
         log_file_name = kwargs.get('log_file_name')
 
@@ -65,10 +67,10 @@ class DirectoryCleaner:
         if log_level == 10:
             handler = logging.StreamHandler()
         else:
-            logs_subdir = Path(__file__).resolve().parents[1].joinpath('logs', logs_subdir_name)
-            if not logs_subdir.exists():
-                os.mkdir(logs_subdir)
-            handler = TimedRotatingFileHandler(logs_subdir.joinpath(log_file_name), when='W0')
+            log_path = logs_basedir.joinpath(logs_subdir_name)
+            if not log_path.exists():
+                os.mkdir(log_path)
+            handler = TimedRotatingFileHandler(log_path.joinpath(log_file_name), when='W0')
 
         handler.setLevel(log_level)
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
