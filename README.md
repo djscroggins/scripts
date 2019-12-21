@@ -35,3 +35,9 @@ To run python scripts:
     ```
     0 21 * * * cd /path/to/scripts/ && ./clean-downloads.sh > /path/to/scripts/cron-logs/clean-downloads.log 2>&1
     ```
+
+    To set tab
+    
+    ```bash
+    crontab -e
+    ```
