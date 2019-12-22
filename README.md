@@ -18,6 +18,7 @@ To run python scripts:
 - Setup scripts.env
 
     ```bash
+    export PYTHONPATH="path/to/root-module"
     export DOWNLOADS=""
     export SCREENSHOTS=""
     ```
@@ -32,7 +33,7 @@ To run python scripts:
 
 - Or set to run with cron. Sample tab to clean Downloads folder every day at 21:00:00 UTC and log cron output
 
-    ```
+    ```bash
     0 21 * * * cd /path/to/scripts/ && ./clean-downloads.sh > /path/to/scripts/cron-logs/clean-downloads.log 2>&1
     ```
 
