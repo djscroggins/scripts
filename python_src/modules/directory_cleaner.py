@@ -32,7 +32,7 @@ class DirectoryCleaner:
         self.dirs_deleted = []
         self.bad_metadata = []
         self.osx_system_content = {'.DS_Store', '.localized', '__MACOSX'}
-        self.base_dir = base_dir if isinstance(base_dir, Path) else Path(base_dir)
+        self.base_dir = base_dir if isinstance(base_dir, Path) else Path(base_dir).resolve()
         self.max_age = dt.timedelta(days=max_age).total_seconds()
         self.now = time.time()
         self.preview = preview
