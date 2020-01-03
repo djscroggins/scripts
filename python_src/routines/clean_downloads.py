@@ -3,7 +3,6 @@ from pathlib import Path
 
 from modules.directory_cleaner import DirectoryCleaner
 
-
 BASE_DIR = Path(os.getenv('DOWNLOADS'))
 
 LOG_CONFIG = {
@@ -12,5 +11,6 @@ LOG_CONFIG = {
 }
 
 if __name__ == "__main__":
-    dc = DirectoryCleaner(base_dir=BASE_DIR, max_age=180, preview=True, **LOG_CONFIG)
+    dc = DirectoryCleaner(target_dir=BASE_DIR, max_age=180,
+                          preview=True, **LOG_CONFIG)
     dc.remove_old_content()

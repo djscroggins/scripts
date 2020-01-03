@@ -16,15 +16,16 @@ class DirectoryCleaner:
     Utility class for identifying files to be deleted, currently based on age only
     """
 
-    def __init__(self, base_dir: Union[Path, str], max_age: int = 180, preview: bool = False, debug: bool = False,
+    def __init__(self, target_dir: Union[Path, str], max_age: int = 180, preview: bool = False, debug: bool = False,
                  **kwargs):
         """
 
         Args:
-            base_dir (str): absolute path to directory at which to start execution
+            target_dir (Union[Path, str]): absolute path to directory at which to start execution;
+                can be Path-like object or string
             max_age (int): threshold for acting on files in days
             preview (bool): when set to True, will only generate a report of operation to be performed
-            debug (bool): when set to True, logs will be streamed to console rather than written to file
+            debug (bool): when set to True, logs will be streamed to console 
         """
         self._total_contents = 0
         self._total_old_contents = 0
@@ -32,18 +33,22 @@ class DirectoryCleaner:
         self._dirs_deleted = []
         self._bad_or_missing_metadata = []
         self._osx_system_content = {'.DS_Store', '.localized', '__MACOSX'}
-        self._target_dir = base_dir if isinstance(base_dir, Path) else Path(base_dir).resolve()
+        self._target_dir = target_dir if isinstance(
+            target_dir, Path) else Path(target_dir).resolve()
         self._max_age = dt.timedelta(days=max_age).total_seconds()
         self._now = time.time()
         self._preview = preview
 
         logger_kwargs = dict(
             logger_name=kwargs.get('logger_name', type(self).__name__),
-            logs_basedir=kwargs.get('logs_basedir', Path(__file__).resolve().parents[1].joinpath('logs')),
-            logs_subdir_name=kwargs.get('logs_subdir', 'directory-cleaning-logs'),
+            logs_basedir=kwargs.get('logs_basedir', Path(
+                __file__).resolve().parents[1].joinpath('logs')),
+            logs_subdir_name=kwargs.get(
+                'logs_subdir', 'directory-cleaning-logs'),
             log_file_name=kwargs.get('logs_file_name', 'directory-cleaning')
         )
-        self._logger = self._get_logger(logging.DEBUG if debug else logging.INFO, **logger_kwargs)
+        self._logger = self._get_logger(
+            logging.DEBUG if debug else logging.INFO, **logger_kwargs)
 
     @staticmethod
     def _get_logger(log_level: int, **kwargs) -> logging.Logger:
@@ -70,10 +75,12 @@ class DirectoryCleaner:
             log_path = logs_basedir.joinpath(logs_subdir_name)
             if not log_path.exists():
                 os.mkdir(log_path)
-            handler = TimedRotatingFileHandler(log_path.joinpath(log_file_name), when='W0')
+            handler = TimedRotatingFileHandler(
+                log_path.joinpath(log_file_name), when='W0')
 
         handler.setLevel(log_level)
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        formatter = logging.Formatter(
+            '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         handler.setFormatter(formatter)
         logger.addHandler(handler)
         return logger
@@ -151,8 +158,10 @@ class DirectoryCleaner:
             if target_object not in self._osx_system_content:
                 if 'null' in date_added:
                     self._bad_or_missing_metadata.append(str(target_path))
-                    last_modified_timestamp: float = os.stat(target_path).st_mtime
-                    self._handle_old_content(target_path, last_modified_timestamp)
+                    last_modified_timestamp: float = os.stat(
+                        target_path).st_mtime
+                    self._handle_old_content(
+                        target_path, last_modified_timestamp)
 
                 else:
                     date_added_timestamp: float = dt.datetime.strptime(
