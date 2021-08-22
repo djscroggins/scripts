@@ -8,22 +8,22 @@ def get_current_year() -> int:
 
 
 def get_first_day(year: int, month: int) -> str:
-    return datetime.date(year, month, 1).strftime('%m-%d-%Y')
+    return datetime.date(year, month, 1).strftime("%m-%d-%Y")
 
 
 def get_last_day(year: int, month: int):
     _, num_days = calendar.monthrange(year, month)
-    return datetime.date(year, month, num_days).strftime('%m-%d-%Y')
+    return datetime.date(year, month, num_days).strftime("%m-%d-%Y")
 
 
 def open_mint(start_date: str, end_date: str) -> None:
-    mint_base_url = 'https://mint.intuit.com/transaction.event'
-    mint_open_url = f'{mint_base_url}?startDate={start_date}&endDate={end_date}'
-    subprocess.run(['open', mint_open_url])
+    mint_base_url = "https://mint.intuit.com/transaction.event"
+    mint_open_url = f"{mint_base_url}?startDate={start_date}&endDate={end_date}"
+    subprocess.run(["open", mint_open_url])
 
 
 def main() -> None:
-    prompt = 'Enter current month as integer: '
+    prompt = "Enter current month as integer: "
     accepted_range = set([i for i in range(1, 13)])
     while True:
         try:
@@ -37,8 +37,8 @@ def main() -> None:
             open_mint(first_day, last_day)
             break
         except ValueError:
-            prompt = 'Make sure to enter month as valid integer between 1 and 12: '
+            prompt = "Make sure to enter month as valid integer between 1 and 12: "
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
